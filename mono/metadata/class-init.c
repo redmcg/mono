@@ -329,7 +329,7 @@ mono_class_setup_fields (MonoClass *klass)
 				mono_class_set_type_load_failure (klass, "Missing field layout info for %s", field->name);
 				break;
 			}
-			if (offset < -1) { /*-1 is used to encode special static fields */
+			if (offset < -2) { /*-1 is used to encode special static fields, -2 for RVA fields */
 				mono_class_set_type_load_failure (klass, "Field '%s' has a negative offset %d", field->name, offset);
 				break;
 			}
@@ -3452,6 +3452,12 @@ mono_class_layout_fields (MonoClass *klass, int base_instance_size, int packing_
 			continue;
 		if (field->type->attrs & FIELD_ATTRIBUTE_STATIC)
 			continue;
+#ifdef HOST_WIN32
+		if ((field->type->attrs & FIELD_ATTRIBUTE_HAS_FIELD_RVA) &&
+			field->parent->image->is_module_handle &&
+			mono_field_get_data(field))
+			continue;
+#endif
 		if (blittable) {
 			if (field->type->byref || MONO_TYPE_IS_REFERENCE (field->type)) {
 				blittable = FALSE;
@@ -3704,6 +3710,8 @@ mono_class_layout_fields (MonoClass *klass, int base_instance_size, int packing_
 
 	/* Publish the data */
 	mono_loader_lock ();
+	if (!strcmp (mono_class_full_name(klass), "*()"))
+		g_print ("SDFSDFSF\n");
 	if (klass->instance_size && !klass->image->dynamic) {
 		/* Might be already set using cached info */
 		if (klass->instance_size != instance_size) {

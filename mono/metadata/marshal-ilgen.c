@@ -79,7 +79,7 @@ get_method_image (MonoMethod *method)
 {
 	return m_class_get_image (method->klass);
 }
-
+static MonoClass *KLASS_HACK;
 static void
 emit_struct_conv (MonoMethodBuilder *mb, MonoClass *klass, gboolean to_object);
 
@@ -1022,6 +1022,13 @@ emit_struct_conv_full (MonoMethodBuilder *mb, MonoClass *klass, gboolean to_obje
 					goto handle_enum;
 				}
 
+				if (mono_class_from_mono_type (ftype) == klass) {
+					char *msg = g_strdup_printf("Cannot generate recursive code to marshal type %s\n", mono_type_full_name (m_class_get_byval_arg (klass)));
+					/* Generating the code for this would infinitely recurse. */
+					mono_mb_emit_exception_marshal_directive (mb, msg);
+					return;
+				}
+
 				MonoType *int_type = mono_get_int_type ();
 				src_var = mono_mb_add_local (mb, int_type);
 				dst_var = mono_mb_add_local (mb, int_type);
@@ -1091,6 +1098,15 @@ emit_struct_conv_full (MonoMethodBuilder *mb, MonoClass *klass, gboolean to_obje
 		}
 		default: {
 			int src_var, dst_var;
+
+			if (conv == MONO_MARSHAL_CONV_OBJECT_STRUCT &&
+				mono_class_from_mono_type (ftype) == klass)
+			{
+				char *msg = g_strdup_printf("Cannot generate recursive code to marshal type %s\n", mono_type_full_name (m_class_get_byval_arg (klass)));
+				/* Generating the code for this would infinitely recurse. */
+				mono_mb_emit_exception_marshal_directive (mb, msg);
+				return;
+			}
 
 			MonoType *int_type = mono_get_int_type ();
 			src_var = mono_mb_add_local (mb, int_type);
@@ -5994,6 +6010,12 @@ emit_managed_wrapper_ilgen (MonoMethodBuilder *mb, MonoMethodSignature *invoke_s
 		case MONO_TYPE_SZARRAY:
 			mono_emit_marshal (m, 0, sig->ret, mspecs [0], 0, NULL, MARSHAL_ACTION_MANAGED_CONV_RESULT);
 			break;
+		case MONO_TYPE_FNPTR:
+		{
+			char *msg = g_strdup_printf("don't know how to convert FNPTR return value\n");
+			mono_mb_emit_exception_marshal_directive (mb, msg);
+				break;
+		}
 		default:
 			g_warning ("return type 0x%02x unknown", sig->ret->type);	
 			g_assert_not_reached ();

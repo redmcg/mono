@@ -2950,8 +2950,17 @@ retry:
 		type = m_class_get_byval_arg (type->data.array->eklass);
 		goto retry;
 	case MONO_TYPE_FNPTR:
-		//return signature_in_image (type->data.method, image);
-		g_assert_not_reached ();
+	{
+		gpointer iter = NULL;
+		MonoType *p;
+		MonoMethodSignature *sig = type->data.method;
+
+		while ((p = mono_signature_get_params (sig, &iter)) != NULL)
+			collect_type_images (p, data);
+
+		type = mono_signature_get_return_type (sig);
+		goto retry;
+	}
 	case MONO_TYPE_VAR:
 	case MONO_TYPE_MVAR:
 	{

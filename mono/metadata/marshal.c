@@ -3389,7 +3389,7 @@ mono_marshal_get_native_wrapper (MonoMethod *method, gboolean check_exceptions, 
 	}
 
 	/* internal calls: we simply push all arguments and call the method (no conversions) */
-	if (method->iflags & (METHOD_IMPL_ATTRIBUTE_INTERNAL_CALL | METHOD_IMPL_ATTRIBUTE_RUNTIME)) {
+	if (method->iflags & (METHOD_IMPL_ATTRIBUTE_INTERNAL_CALL | METHOD_IMPL_ATTRIBUTE_RUNTIME) && !pinvoke) {
 		if (sig->hasthis)
 			csig = mono_metadata_signature_dup_add_this (get_method_image (method), sig, method->klass);
 		else
