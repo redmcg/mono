@@ -215,7 +215,11 @@ namespace System.Security.Cryptography.X509Certificates {
 
 		public void Close () 
 		{
-			store = null;
+			if (store != null)
+			{
+				store.Close ();
+				store = null;
+			}
 			if (list != null)
 				list.Clear ();
 		}
