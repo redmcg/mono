@@ -32,6 +32,7 @@ using System;
 using System.Collections;
 using System.Globalization;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Security.Cryptography;
 
@@ -40,6 +41,7 @@ using Mono.Security.X509.Extensions;
 
 using SSCX = System.Security.Cryptography.X509Certificates;
 
+using OpenFlags = System.Security.Cryptography.X509Certificates.OpenFlags;
 using StoreLocation = System.Security.Cryptography.X509Certificates.StoreLocation;
 
 namespace Mono.Security.X509 {
@@ -51,15 +53,55 @@ namespace Mono.Security.X509 {
 #endif
 	class X509Store {
 
+		[DllImport ("crypt32")]
+		internal static extern bool CertCloseStore (IntPtr handle, int flags);
+
+		internal class SafeCertStoreHandle : SafeHandle {
+			protected SafeCertStoreHandle() : base(IntPtr.Zero, true)
+			{
+			}
+
+			public override bool IsInvalid
+			{
+				get { return handle == IntPtr.Zero; }
+			}
+
+			protected override bool ReleaseHandle()
+			{
+				return CertCloseStore (handle, 0);
+			}
+		}
+
+		[DllImport ("crypt32")]
+		internal static extern SafeCertStoreHandle CertOpenStore([MarshalAs(UnmanagedType.LPStr)] string lpszStoreProvider, uint dwMsgAndCertEncodingType, IntPtr hCryptProv, uint dwFlags, [MarshalAs(UnmanagedType.LPWStr)] string pvProv);
+
 		private string _name;
 		private StoreLocation _location;
-		//private SafeCertSoreHandle _handle; 
+		private SafeCertStoreHandle _handle; 
 
-		internal X509Store (string name, StoreLocation location)
+		internal X509Store (string name, StoreLocation location, OpenFlags flags)
 		{
 			_name = name;
 			_location = location;
-			// TODO: Open handle here using CertOpenSystemStore
+
+			// Open handle
+			uint dwFlags = 0;
+            if ((flags & OpenFlags.IncludeArchived) == OpenFlags.IncludeArchived)
+                dwFlags |= 0x200;
+            if ((flags & OpenFlags.MaxAllowed) == OpenFlags.MaxAllowed)
+                dwFlags |= 0x1000;
+            if ((flags & OpenFlags.OpenExistingOnly) == OpenFlags.OpenExistingOnly)
+                dwFlags |= 0x4000;
+            if ((flags & OpenFlags.ReadWrite) == 0)
+                dwFlags |= 0x8000;
+            if ((_location == StoreLocation.CurrentUser))
+                dwFlags |= 0x10000;
+            if ((_location == StoreLocation.LocalMachine))
+                dwFlags |= 0x20000; 
+
+			_handle = CertOpenStore("System", 0x00010001, IntPtr.Zero, dwFlags, _name);
+            if (_handle.IsInvalid)
+                throw new CryptographicException ("CertOpenStore failed");
 		}
 
 		// properties
@@ -91,7 +133,7 @@ namespace Mono.Security.X509 {
 
 		public void Close ()
 		{
-			throw new NotImplementedException ("Mono.Security.X509.X509Store.Close()");
+			_handle.Dispose ();
 		}
 
 		public void Import (X509Certificate certificate) 

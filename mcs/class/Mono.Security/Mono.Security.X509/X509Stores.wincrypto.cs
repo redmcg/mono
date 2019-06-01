@@ -34,6 +34,7 @@ using System.IO;
 
 using Mono.Security.X509.Extensions;
 
+using OpenFlags = System.Security.Cryptography.X509Certificates.OpenFlags;
 using StoreLocation = System.Security.Cryptography.X509Certificates.StoreLocation;
 
 namespace Mono.Security.X509 {
@@ -62,7 +63,7 @@ namespace Mono.Security.X509 {
 		public X509Store Personal {
 			get { 
 				if (_personal == null) {
-					_personal = new X509Store (Names.Personal, _location);
+					_personal = new X509Store (Names.Personal, _location, OpenFlags.ReadOnly);
 				}
 				return _personal; 
 			}
@@ -71,7 +72,7 @@ namespace Mono.Security.X509 {
 		public X509Store OtherPeople {
 			get { 
 				if (_other == null) {
-					_other = new X509Store (Names.OtherPeople, _location);
+					_other = new X509Store (Names.OtherPeople, _location, OpenFlags.ReadOnly);
 				}
 				return _other; 
 			}
@@ -80,7 +81,7 @@ namespace Mono.Security.X509 {
 		public X509Store IntermediateCA {
 			get { 
 				if (_intermediate == null) {
-					_intermediate = new X509Store (Names.IntermediateCA, _location);
+					_intermediate = new X509Store (Names.IntermediateCA, _location, OpenFlags.ReadOnly);
 				}
 				return _intermediate; 
 			}
@@ -89,7 +90,7 @@ namespace Mono.Security.X509 {
 		public X509Store TrustedRoot {
 			get { 
 				if (_trusted == null) {
-					_trusted = new X509Store (Names.TrustedRoot, _location);
+					_trusted = new X509Store (Names.TrustedRoot, _location, OpenFlags.ReadOnly);
 				}
 				return _trusted; 
 			}
@@ -98,7 +99,7 @@ namespace Mono.Security.X509 {
 		public X509Store Untrusted {
 			get { 
 				if (_untrusted == null) {
-					_untrusted = new X509Store (Names.Untrusted, _location);
+					_untrusted = new X509Store (Names.Untrusted, _location, OpenFlags.ReadOnly);
 				}
 				return _untrusted; 
 			}
@@ -126,12 +127,12 @@ namespace Mono.Security.X509 {
 			_untrusted = null;
 		}
 
-		public X509Store Open (string storeName, bool create)
+		public X509Store Open (string storeName, OpenFlags flags)
 		{
 			if (storeName == null)
 				throw new ArgumentNullException ("storeName");
 
-			return new X509Store (storeName, _location);
+			return new X509Store (storeName, _location, flags);
 		}
 
 		// names

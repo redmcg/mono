@@ -245,8 +245,7 @@ namespace System.Security.Cryptography.X509Certificates {
 				break;
 			}
 
-			bool create = ((flags & OpenFlags.OpenExistingOnly) != OpenFlags.OpenExistingOnly);
-			store = Factory.Open (name, create);
+			store = Factory.Open (name, flags);
 			if (store == null)
 				throw new CryptographicException (Locale.GetText ("Store {0} doesn't exists.", _name));
 			_flags = flags;
