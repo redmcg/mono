@@ -9,6 +9,7 @@
 //
 
 using NUnit.Framework;
+using Microsoft.Win32;
 using System;
 using System.IO;
 using System.Reflection;
@@ -151,6 +152,7 @@ namespace MonoTests.System.Security.Principal {
 			else {
 				Assert.AreEqual (IntPtr.Zero, id.Token, "Token");
 				Assert.AreEqual (String.Empty, id.Name, "Name");
+				Assert.IsNull (id.User, "User");
 			}
 		}
 
@@ -166,7 +168,11 @@ namespace MonoTests.System.Security.Principal {
 			Assert.IsTrue ((!id.IsSystem || (id.Token == IntPtr.Zero)), "IsSystem");
 			if (!IsPosix) {
 				Assert.IsTrue ((id.Token != IntPtr.Zero), "Token");
+				// check the validity of User by trying to open HKCU for writing
+				Registry.Users.OpenSubKey (id.User.ToString (),
+					RegistryKeyPermissionCheck.ReadWriteSubTree);
 			}
+			Console.WriteLine(id.User.ToString ());
 			Assert.IsNotNull (id.Name, "Name");
 		}
 
