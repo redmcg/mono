@@ -79,5 +79,10 @@ namespace Microsoft.Win32
 			internal int dwFileAttributes = 0;
 			internal String cFileName = null;
 		}
+
+#if FEATURE_CODEPAGES_FILE
+        [DllImport("kernel32")]
+        internal static extern int GetACP();
+#endif
 	}
 }

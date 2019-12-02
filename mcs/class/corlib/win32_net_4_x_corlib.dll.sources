@@ -32,6 +32,15 @@
 
 ../../../external/corert/src/Runtime.Base/src/System/Runtime/InteropServices/NativeCallableAttribute.cs
 
+../referencesource/mscorlib/microsoft/win32/safehandles/safefilemappinghandle.cs
+../referencesource/mscorlib/microsoft/win32/safehandles/safeviewoffilehandle.cs
+
+../referencesource/mscorlib/system/text/basecodepageencoding.cs
+../referencesource/mscorlib/system/text/codepageencoding.cs
+../referencesource/mscorlib/system/text/dbcscodepageencoding.cs
+../referencesource/mscorlib/system/text/mlangcodepageencoding.cs
+../referencesource/mscorlib/system/text/sbcscodepageencoding.cs
+
 ../../../external/corefx/src/Microsoft.Win32.Registry/src/Microsoft/Win32/RegistryKey.cs
 ../../../external/corefx/src/Microsoft.Win32.Registry/src/Microsoft/Win32/SafeHandles/SafeRegistryHandle.cs
 ../../../external/corefx/src/Microsoft.Win32.Registry/src/System/Security/AccessControl/RegistrySecurity.cs

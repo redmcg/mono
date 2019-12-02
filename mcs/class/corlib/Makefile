@@ -22,6 +22,10 @@ $(error Unknown framework version)
 endif
 endif
 
+ifdef FEATURE_CODEPAGES_FILE
+LIB_MCS_FLAGS += -d:FEATURE_CODEPAGES_FILE
+endif
+
 ifeq ($(PROFILE),build)
 CSC_RUNTIME_FLAGS=--profile=aot:output=$(topdir)/class/lib/$(PROFILE_DIRECTORY)/csc.$(LIBRARY).aotprofile
 endif

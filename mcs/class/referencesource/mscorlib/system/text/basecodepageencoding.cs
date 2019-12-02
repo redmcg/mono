@@ -263,6 +263,7 @@ namespace System.Text
         [System.Security.SecurityCritical]
         protected abstract unsafe void LoadManagedCodePage();
 
+#if !MONO
         // Allocate memory to load our code page
         [System.Security.SecurityCritical]  // auto-generated
         [ResourceExposure(ResourceScope.None)]
@@ -307,6 +308,7 @@ namespace System.Text
 
             return strName;
         }
+#endif
 
         [System.Security.SecurityCritical]
         protected abstract unsafe void ReadBestFitTable();
