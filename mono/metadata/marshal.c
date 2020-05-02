@@ -649,10 +649,10 @@ mono_array_to_lparray_impl (MonoArrayHandle array_handle, MonoError *error)
 	case MONO_TYPE_R8:
 	case MONO_TYPE_VALUETYPE:
 	case MONO_TYPE_PTR:
+	case MONO_TYPE_OBJECT:
 		/* nothing to do */
 		break;
 	case MONO_TYPE_GENERICINST:
-	case MONO_TYPE_OBJECT:
 	case MONO_TYPE_ARRAY: 
 	case MONO_TYPE_SZARRAY:
 	case MONO_TYPE_STRING:
