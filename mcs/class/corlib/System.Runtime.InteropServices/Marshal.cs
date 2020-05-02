@@ -711,6 +711,7 @@ namespace System.Runtime.InteropServices
 #if FULL_AOT_RUNTIME
 			throw new PlatformNotSupportedException ();
 #else
+			return -1;
 			throw new NotImplementedException ();
 #endif
 		}
