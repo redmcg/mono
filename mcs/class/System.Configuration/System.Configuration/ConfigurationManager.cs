@@ -107,11 +107,15 @@ namespace System.Configuration {
 				break;
 			case ConfigurationUserLevel.PerUserRoaming:
 				map.RoamingUserConfigFilename = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData), GetAssemblyInfo(calling_assembly));
+				if (!Directory.Exists(map.RoamingUserConfigFilename))
+					Directory.CreateDirectory(map.RoamingUserConfigFilename);
 				map.RoamingUserConfigFilename = Path.Combine (map.RoamingUserConfigFilename, "user.config");
 				goto case ConfigurationUserLevel.None;
 
 			case ConfigurationUserLevel.PerUserRoamingAndLocal:
 				map.LocalUserConfigFilename = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.LocalApplicationData), GetAssemblyInfo(calling_assembly));
+				if (!Directory.Exists(map.LocalUserConfigFilename))
+					Directory.CreateDirectory(map.LocalUserConfigFilename);
 				map.LocalUserConfigFilename = Path.Combine (map.LocalUserConfigFilename, "user.config");
 				goto case ConfigurationUserLevel.PerUserRoaming;
 			}
