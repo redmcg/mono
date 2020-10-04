@@ -25,6 +25,10 @@
 #include "trace.h"
 #include "mini-arch.h"
 
+#ifdef HOST_WIN32
+#  define printf g_print
+#endif
+
 #ifndef DISABLE_JIT
 
 #ifndef MONO_MAX_XREGS
@@ -1744,7 +1748,8 @@ mono_local_regalloc (MonoCompile *cfg, MonoBasicBlock *bb)
 		}
 
 		if (spec [MONO_INST_CLOB] == 'c') {
-			int j, s, dreg, dreg2, cur_bank;
+			int j, dreg, dreg2, cur_bank;
+			regmask_t s;
 			guint64 clob_mask;
 
 			clob_mask = MONO_ARCH_CALLEE_REGS;

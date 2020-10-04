@@ -29,6 +29,7 @@ typedef enum {
 	MONO_TRACE_TAILCALL           = 1 << 16,
 	MONO_TRACE_PROFILER           = 1 << 17,
 	MONO_TRACE_TIERED             = 1 << 18,
+	MONO_TRACE_QCALL              = 1 << 19
 } MonoTraceMask;
 
 MONO_BEGIN_DECLS
@@ -102,6 +103,15 @@ mono_trace (GLogLevelFlags level, MonoTraceMask mask, const char *format, ...)
 #define mono_runtime_printf_err(format, ...) g_log ("mono-rt", G_LOG_LEVEL_CRITICAL, format "\n", ##__VA_ARGS__)
 #define mono_profiler_printf(format, ...) g_log ("mono-prof", G_LOG_LEVEL_MESSAGE, format "\n", ##__VA_ARGS__)
 #define mono_profiler_printf_err(format, ...) g_log ("mono-prof", G_LOG_LEVEL_CRITICAL, format "\n", ##__VA_ARGS__)
+#define mono_runtime_stdout_fflush() do { } while (0)
+
+#elif defined(HOST_WIN32)
+
+#define mono_gc_printf(gc_log_file, format, ...) g_print (format, ##__VA_ARGS__)
+#define mono_runtime_printf(format, ...) g_print (format, ##__VA_ARGS__)
+#define mono_runtime_printf_err(format, ...) g_print (format, ##__VA_ARGS__)
+#define mono_profiler_printf(format, ...) g_print (format, ##__VA_ARGS__)
+#define mono_profiler_printf_err(format, ...) g_print (format, ##__VA_ARGS__)
 #define mono_runtime_stdout_fflush() do { } while (0)
 
 #else
