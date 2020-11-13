@@ -429,7 +429,10 @@ namespace System
 
 		public static void WriteLine (string value)
 		{
-			stdout.WriteLine (value);
+			try {
+				stdout.WriteLine (value);
+			} catch (System.UnauthorizedAccessException) {
+			}
 		}
 
 		[CLSCompliant (false)]
